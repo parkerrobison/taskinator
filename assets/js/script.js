@@ -7,13 +7,25 @@ var createTaskHandler = function() {
     // this prevents the page from refreshing every time the form is submitted.
     event.preventDefault();
 
+    var taskNameInput = document.querySelector("input[name='task-name']").value;
+    var taskTypeInput = document.querySelector("select[name='task-type']").value;
+    
+
     //this line creates a new <li> with the variable name listItemEl
     var listItemEl = document.createElement("li");
     //this assigns that variable the CSS styling from task item
     listItemEl.className = "task-item";
-    // this determines the text inside of the new variable.
-    listItemEl.textContent = "This is a new task";
-    //this attaches the <li> to the <ul>
+
+    //create div to hold task info and add to list item
+    var taskInfoEl = document.createElement("div");
+    // give it a class name
+    taskInfoEl.className = "task-info";
+    // add HTML content to div
+    taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskNameInput + "</h3><span class='task-type'>" +taskTypeInput + "</span>";
+
+    listItemEl.appendChild(taskInfoEl);
+
+    // add entire list item to list
     tasksToDoEl.appendChild(listItemEl);
 }
 
