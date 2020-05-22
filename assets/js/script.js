@@ -57,30 +57,32 @@ var completeEditTask = function(taskName, taskType, taskId) {
 };
 
 var createTaskEl = function(taskDataObj) {
-//this line creates a new <li> with the variable name listItemEl
-var listItemEl = document.createElement("li");
-//this assigns that variable the CSS styling from task item
-listItemEl.className = "task-item";
+    //this line creates a new <li> with the variable name listItemEl
+    var listItemEl = document.createElement("li");
+    //this assigns that variable the CSS styling from task item
+    listItemEl.className = "task-item";
 
-//add task id as a custom attribute
-listItemEl.setAttribute("data-task-id", taskIdCounter);
+    //add task id as a custom attribute
+    listItemEl.setAttribute("data-task-id", taskIdCounter);
+    //this attribute makes the new task draggable
+    listItemEl.setAttribute("draggable", "true");
 
-//create div to hold task info and add to list item
-var taskInfoEl = document.createElement("div");
-// give it a class name
-taskInfoEl.className = "task-info";
-// add HTML content to div
-taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskDataObj.name + "</h3><span class='task-type'>" + taskDataObj.type + "</span>";
-listItemEl.appendChild(taskInfoEl);
-// add entire list item to list
+    //create div to hold task info and add to list item
+    var taskInfoEl = document.createElement("div");
+    // give it a class name
+    taskInfoEl.className = "task-info";
+    // add HTML content to div
+    taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskDataObj.name + "</h3><span class='task-type'>" + taskDataObj.type + "</span>";
+    listItemEl.appendChild(taskInfoEl);
+    // add entire list item to list
 
-var taskActionsEl = createTaskActions(taskIdCounter);
-listItemEl.appendChild(taskActionsEl);
+    var taskActionsEl = createTaskActions(taskIdCounter);
+    listItemEl.appendChild(taskActionsEl);
 
-tasksToDoEl.appendChild(listItemEl);
+    tasksToDoEl.appendChild(listItemEl);
 
-// increase task counter for next uniwue id
-taskIdCounter++;
+    // increase task counter for next uniwue id
+    taskIdCounter++;
 }
 
 var createTaskActions = function(taskId) {
@@ -185,9 +187,60 @@ var taskStatusChangeHandler = function(event) {
     }
 };
 
+var dragTaskHandler = function(event) {
+    var taskId = event.target.getAttribute("data-task-id");
+    // this stores taskId in the dataTransfer property. the first argument is the data format and the second states the data's value.
+    event.dataTransfer.setData("text/plain", taskId);
+    var getId = event.dataTransfer.getData("text/plain");
+}
+
+var dropZoneDragHandler = function(event) {
+    //this determines the "drop zone" for this function. 
+    var taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+    event.preventDefault();
+    taskListEl.setAttribute("style", "background: rgba(68, 233, 255, 0.7); border-style: dashed;");
+    }
+};
+
+var dropTaskHandler = function(event) {
+    var id = event.dataTransfer.getData("text/plain");
+    var draggableElement = document.querySelector("[data-task-id='" + id + "']");
+    var dropZoneEl = event.target.closest(".task-list");
+    var statusType = dropZoneEl.id;
+    //this creates a variable to reference the select element as a document object.
+    var statusSelectEl = draggableElement.querySelector("select[name='status-change']");
+    if (statusType === "tasks-to-do") {
+        statusSelectEl.selectedIndex = 0;
+    }
+    else if (statusType === "tasks-in-progress") {
+        statusSelectEl.selectedIndex = 1;
+    }
+    else if (statusType === "tasks-completed") {
+        statusSelectEl.selectedIndex = 2;
+    }
+    dropZoneEl.removeAttribute("style");
+
+    dropZoneEl.appendChild(draggableElement);
+}
+
+var dragLeaveHandler = function(event) {
+    var taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+        taskListEl.removeAttribute("style");
+    }
+}
 // this line was a click listener but we upadated it to be a submit listener, which activates when a button with "submit" gets clicked or by pressing enter.
 formEl.addEventListener("submit", taskFormHandler); 
 
 pageContentEl.addEventListener("click", taskButtonHandler);
 
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+
+pageContentEl.addEventListener("dragstart", dragTaskHandler);
+
+pageContentEl.addEventListener("dragover", dropZoneDragHandler);
+
+pageContentEl.addEventListener("drop", dropTaskHandler);
+
+pageContentEl.addEventListener("dragleave", dragLeaveHandler);
