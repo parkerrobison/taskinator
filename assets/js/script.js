@@ -63,6 +63,8 @@ var completeEditTask = function(taskName, taskType, taskId) {
     };
 
     alert("Task Updated!");
+
+    saveTasks()
     
     formEl.removeAttribute("data-task-id");
     document.querySelector("#save-task").textContent = "Add Task";
@@ -96,6 +98,8 @@ var createTaskEl = function(taskDataObj) {
     taskDataObj.id = taskIdCounter;
 
     tasks.push(taskDataObj);
+
+    saveTasks()
 
     // increase task counter for next uniwue id
     taskIdCounter++;
@@ -193,6 +197,8 @@ var deleteTask = function(taskId) {
     }
     //reassign tasks array to be the same as updatedTaskArr
     tasks = updatedTaskArr;
+
+    saveTasks()
 };
 
 var taskStatusChangeHandler = function(event) {
@@ -221,6 +227,7 @@ var taskStatusChangeHandler = function(event) {
             tasks[i].status = statusValue;
         }
     }
+    saveTasks();
 };
 
 var dragTaskHandler = function(event) {
@@ -265,6 +272,7 @@ var dropTaskHandler = function(event) {
             tasks[i].status = statusSelectEl.value.toLowerCase();
         }
     }
+    saveTasks()
 }
 
 var dragLeaveHandler = function(event) {
@@ -272,6 +280,11 @@ var dragLeaveHandler = function(event) {
     if (taskListEl) {
         taskListEl.removeAttribute("style");
     }
+}
+
+var saveTasks = function() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+
 }
 // this line was a click listener but we upadated it to be a submit listener, which activates when a button with "submit" gets clicked or by pressing enter.
 formEl.addEventListener("submit", taskFormHandler); 
