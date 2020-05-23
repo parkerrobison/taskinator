@@ -42,7 +42,7 @@ var taskFormHandler = function(event) {
             status: "to do"
         };
 
-        createTaskEl(taskDataObj);
+        createTaskEl(taskDataObj, tasksToDoEl);
     }
 }
 
@@ -70,7 +70,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
     document.querySelector("#save-task").textContent = "Add Task";
 };
 
-var createTaskEl = function(taskDataObj) {
+var createTaskEl = function(taskDataObj, section) {
     //this line creates a new <li> with the variable name listItemEl
     var listItemEl = document.createElement("li");
     //this assigns that variable the CSS styling from task item
@@ -93,7 +93,7 @@ var createTaskEl = function(taskDataObj) {
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
 
-    tasksToDoEl.appendChild(listItemEl);
+    section.appendChild(listItemEl);
 
     taskDataObj.id = taskIdCounter;
 
@@ -297,7 +297,22 @@ var loadTasks = function(){
     //loop through savedTasks array
     for (var i = 0; i < savedTasks.length; i++) {
         //pass each task object into the 'createTaskEl()' function
-        createTaskEl(savedTasks[i]);
+        console.log(savedTasks[i])
+
+       
+            if (savedTasks[i].status === "in progress") {
+              //  var li = document.createElement("li");
+                    createTaskEl(savedTasks[i],tasksInProgressEl)
+                  //  tasksInProgressEl.appendChild(li);
+            }
+            else if (savedTasks[i].status=== "completed") {
+                createTaskEl(savedTasks[i],tasksCompletedEl)
+            }
+            else {
+                createTaskEl(savedTasks[i], tasksToDoEl)
+            }
+        
+        
     }
     
     
